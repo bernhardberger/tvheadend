@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-27 03:07+0000\n"
+"POT-Creation-Date: 2026-05-25 03:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -477,19 +477,14 @@ msgstr ""
 msgid "ATSC-T multiplex"
 msgstr ""
 
-#: src/input/mpegts/mpegts_mux_dvb.c:225 src/input/mpegts/mpegts_mux_dvb.c:232
-#: src/input/mpegts/mpegts_mux_dvb.c:237 src/input/mpegts/mpegts_mux_dvb.c:244
-#: src/input/mpegts/mpegts_mux_dvb.c:249 src/input/mpegts/mpegts_mux_dvb.c:254
-#: src/input/mpegts/mpegts_mux_dvb.c:259 src/input/mpegts/mpegts_mux_dvb.c:327
-#: src/input/mpegts/mpegts_mux_dvb.c:332 src/input/mpegts/mpegts_mux_dvb.c:599
-#: src/input/mpegts/mpegts_mux_dvb.c:647 src/input/mpegts/mpegts_mux_dvb.c:652
+#: src/input/mpegts/mpegts_mux_dvb.c:225 src/input/mpegts/mpegts_mux_dvb.c:237
+#: src/input/mpegts/mpegts_mux_dvb.c:244 src/input/mpegts/mpegts_mux_dvb.c:249
+#: src/input/mpegts/mpegts_mux_dvb.c:254 src/input/mpegts/mpegts_mux_dvb.c:259
+#: src/input/mpegts/mpegts_mux_dvb.c:332 src/input/mpegts/mpegts_mux_dvb.c:652
 #: src/input/mpegts/mpegts_mux_dvb.c:761 src/input/mpegts/mpegts_mux_dvb.c:768
-#: src/input/mpegts/mpegts_mux_dvb.c:774 src/input/mpegts/mpegts_mux_dvb.c:778
-#: src/input/mpegts/mpegts_mux_dvb.c:797 src/input/mpegts/mpegts_mux_dvb.c:801
-#: src/input/mpegts/mpegts_mux_dvb.c:820 src/input/mpegts/mpegts_mux_dvb.c:824
-#: src/input/mpegts/mpegts_mux_dvb.c:875 src/input/mpegts/mpegts_mux_dvb.c:880
+#: src/input/mpegts/mpegts_mux_dvb.c:774 src/input/mpegts/mpegts_mux_dvb.c:797
+#: src/input/mpegts/mpegts_mux_dvb.c:820 src/input/mpegts/mpegts_mux_dvb.c:880
 #: src/input/mpegts/mpegts_mux_dvb.c:1032
-#: src/input/mpegts/mpegts_mux_dvb.c:1039
 #: src/input/mpegts/mpegts_mux_dvb.c:1044
 #: src/input/mpegts/mpegts_mux_dvb.c:1051
 #: src/input/mpegts/mpegts_mux_dvb.c:1056
@@ -1002,7 +997,7 @@ msgstr ""
 msgid "Automatically map EPG source"
 msgstr ""
 
-#: src/wizard.c:1113
+#: src/wizard.c:1114
 msgid "Automatically map all available services to channels."
 msgstr ""
 
@@ -1509,7 +1504,7 @@ msgstr ""
 msgid "Channels / EPG - Bouquets"
 msgstr ""
 
-#: src/channels.c:1763
+#: src/channels.c:1764
 msgid "Channels / EPG - Channel Tags"
 msgstr ""
 
@@ -1683,7 +1678,7 @@ msgstr ""
 msgid "Command to move the dish with an external command."
 msgstr ""
 
-#: src/access.c:2008 src/access.c:2354 src/access.c:2493 src/channels.c:1842
+#: src/access.c:2008 src/access.c:2354 src/access.c:2493 src/channels.c:1843
 #: src/esfilter.c:703 src/esfilter.c:799 src/esfilter.c:895 src/esfilter.c:990
 #: src/esfilter.c:1098 src/esfilter.c:1181 src/profile.c:344 src/bouquet.c:1338
 #: src/epggrab/channel.c:885 src/dvr/dvr_db.c:5011 src/dvr/dvr_autorec.c:1487
@@ -1955,11 +1950,11 @@ msgstr ""
 msgid "Create a provider name tag."
 msgstr ""
 
-#: src/wizard.c:1131
+#: src/wizard.c:1132
 msgid "Create and associate a network tag to created channels."
 msgstr ""
 
-#: src/wizard.c:1122
+#: src/wizard.c:1123
 msgid "Create and associate a provider tag to created channels."
 msgstr ""
 
@@ -1991,7 +1986,7 @@ msgstr ""
 msgid "Create network name tags (set by provider)."
 msgstr ""
 
-#: src/wizard.c:1130
+#: src/wizard.c:1131
 msgid "Create network tags"
 msgstr ""
 
@@ -1999,7 +1994,7 @@ msgstr ""
 msgid "Create provider name tags"
 msgstr ""
 
-#: src/wizard.c:1121
+#: src/wizard.c:1122
 msgid "Create provider tags"
 msgstr ""
 
@@ -3177,7 +3172,7 @@ msgstr ""
 msgid "Enable/disable the rating label."
 msgstr ""
 
-#: src/channels.c:1775
+#: src/channels.c:1776
 msgid "Enable/disable the tag."
 msgstr ""
 
@@ -3186,7 +3181,7 @@ msgid "Enable/disable tuner/adapter."
 msgstr ""
 
 #: src/access.c:1752 src/access.c:2299 src/access.c:2476 src/channels.c:400
-#: src/channels.c:421 src/channels.c:1774 src/service.c:172 src/imagecache.c:90
+#: src/channels.c:421 src/channels.c:1775 src/service.c:172 src/imagecache.c:90
 #: src/esfilter.c:609 src/profile.c:324 src/bouquet.c:1212
 #: src/ratinglabels.c:637 src/epggrab/module.c:171 src/epggrab/channel.c:761
 #: src/dvr/dvr_db.c:4496 src/dvr/dvr_autorec.c:1144 src/dvr/dvr_timerec.c:536
@@ -3605,7 +3600,7 @@ msgstr ""
 msgid "Fine arts"
 msgstr ""
 
-#: src/wizard.c:1195 src/dvr/dvr_db.c:662
+#: src/wizard.c:1196 src/dvr/dvr_db.c:662
 msgid "Finished"
 msgstr ""
 
@@ -3787,11 +3782,11 @@ msgstr ""
 msgid "Format string/Pathname specification"
 msgstr ""
 
-#: src/wizard.c:1028
+#: src/wizard.c:1029
 msgid "Found muxes"
 msgstr ""
 
-#: src/wizard.c:1037
+#: src/wizard.c:1038
 msgid "Found services"
 msgstr ""
 
@@ -3818,7 +3813,7 @@ msgstr ""
 msgid "Free-form field, enter whatever you like here."
 msgstr ""
 
-#: src/access.c:2009 src/access.c:2355 src/access.c:2492 src/channels.c:1843
+#: src/access.c:2009 src/access.c:2355 src/access.c:2492 src/channels.c:1844
 #: src/dvr/dvr_db.c:5012 src/dvr/dvr_autorec.c:1488 src/dvr/dvr_timerec.c:680
 msgid "Free-form text field, enter whatever you like here."
 msgstr ""
@@ -3882,7 +3877,7 @@ msgstr ""
 msgid "Full mux RX mode supported"
 msgstr ""
 
-#: src/channels.c:1816
+#: src/channels.c:1817
 msgid ""
 "Full path to an icon used to depict the tag. This can be a TV network "
 "logotype, etc."
@@ -4178,7 +4173,7 @@ msgstr ""
 msgid "ID"
 msgstr ""
 
-#: src/wizard.c:819
+#: src/wizard.c:820
 msgid "ID of the network."
 msgstr ""
 
@@ -4293,11 +4288,11 @@ msgstr ""
 msgid "Icon"
 msgstr ""
 
-#: src/channels.c:1815
+#: src/channels.c:1816
 msgid "Icon (full URL)"
 msgstr ""
 
-#: src/channels.c:473 src/channels.c:1825 src/ratinglabels.c:697
+#: src/channels.c:473 src/channels.c:1826 src/ratinglabels.c:697
 #: src/input/mpegts/iptv/iptv_mux.c:222
 msgid "Icon URL"
 msgstr ""
@@ -4310,7 +4305,7 @@ msgstr ""
 msgid "Icon base URL."
 msgstr ""
 
-#: src/channels.c:1833
+#: src/channels.c:1834
 msgid "Icon has title"
 msgstr ""
 
@@ -4398,7 +4393,7 @@ msgid ""
 "the access control from within the Tvheadend web interface."
 msgstr ""
 
-#: src/channels.c:1834
+#: src/channels.c:1835
 msgid ""
 "If set, presentation of the tag icon will not superimpose the tag name on "
 "top of the icon."
@@ -4594,7 +4589,7 @@ msgstr ""
 msgid "Interface"
 msgstr ""
 
-#: src/channels.c:1797 src/epggrab/module.c:55
+#: src/channels.c:1798 src/epggrab/module.c:55
 msgid "Internal"
 msgstr ""
 
@@ -5213,7 +5208,7 @@ msgstr ""
 msgid "Manufacturer's product name."
 msgstr ""
 
-#: src/wizard.c:1112
+#: src/wizard.c:1113
 msgid "Map all services"
 msgstr ""
 
@@ -5579,7 +5574,7 @@ msgstr ""
 msgid "NVENC"
 msgstr ""
 
-#: src/channels.c:439 src/channels.c:1790 src/bouquet.c:1268
+#: src/channels.c:439 src/channels.c:1791 src/bouquet.c:1268
 #: src/memoryinfo.c:46 src/epggrab/module.c:152 src/epggrab/channel.c:674
 #: src/epggrab/channel.c:816 src/dvr/dvr_autorec.c:1152
 #: src/dvr/dvr_timerec.c:544 src/input/mpegts/mpegts_input.c:272
@@ -5624,7 +5619,7 @@ msgid ""
 "channels EPG info."
 msgstr ""
 
-#: src/wizard.c:811 src/input/mpegts/mpegts_network.c:200
+#: src/wizard.c:812 src/input/mpegts/mpegts_network.c:200
 msgid "Name of the network."
 msgstr ""
 
@@ -5632,7 +5627,7 @@ msgstr ""
 msgid "Name of the profile."
 msgstr ""
 
-#: src/channels.c:1791
+#: src/channels.c:1792
 msgid "Name of the tag."
 msgstr ""
 
@@ -5660,7 +5655,7 @@ msgstr ""
 msgid "Nature"
 msgstr ""
 
-#: src/wizard.c:786 src/wizard.c:810 src/input/mpegts/mpegts_mux.c:569
+#: src/wizard.c:787 src/wizard.c:811 src/input/mpegts/mpegts_mux.c:569
 #: src/input/mpegts/mpegts_service.c:110
 #: src/input/mpegts/tvhdhomerun/tvhdhomerun.c:206
 msgid "Network"
@@ -5975,7 +5970,7 @@ msgid ""
 "the programme is actually watched."
 msgstr ""
 
-#: src/wizard.c:1029
+#: src/wizard.c:1030
 msgid "Number of muxes found."
 msgstr ""
 
@@ -6123,7 +6118,7 @@ msgstr ""
 msgid "Only admin can watch the realtime log."
 msgstr ""
 
-#: src/channels.c:1806
+#: src/channels.c:1807
 msgid ""
 "Only allow users with this tag (or those with no tags at all) set in access "
 "configuration to use the tag."
@@ -6594,7 +6589,7 @@ msgstr ""
 msgid "Power up time (ms) (10-500)"
 msgstr ""
 
-#: src/wizard.c:800 src/input/mpegts/mpegts_network_dvb.c:247
+#: src/wizard.c:801 src/input/mpegts/mpegts_network_dvb.c:247
 #: src/input/mpegts/mpegts_network_dvb.c:270
 #: src/input/mpegts/mpegts_network_dvb.c:293
 #: src/input/mpegts/mpegts_network_dvb.c:326
@@ -6619,7 +6614,7 @@ msgstr ""
 msgid "Pre-school children's programs"
 msgstr ""
 
-#: src/wizard.c:965
+#: src/wizard.c:966
 msgid "Predefined Muxes"
 msgstr ""
 
@@ -6704,7 +6699,7 @@ msgid ""
 "the assigned DVR configuration."
 msgstr ""
 
-#: src/channels.c:1805
+#: src/channels.c:1806
 msgid "Private"
 msgstr ""
 
@@ -6760,7 +6755,7 @@ msgstr ""
 msgid "Program unique ID (from grabber), such as MV101010101.0000"
 msgstr ""
 
-#: src/wizard.c:779
+#: src/wizard.c:780
 msgid "Progress"
 msgstr ""
 
@@ -6795,6 +6790,14 @@ msgstr ""
 
 #: src/tvhlog.c:174
 msgid "PyEPG Import"
+msgstr ""
+
+#: src/input/mpegts/mpegts_mux_dvb.c:232 src/input/mpegts/mpegts_mux_dvb.c:327
+#: src/input/mpegts/mpegts_mux_dvb.c:599 src/input/mpegts/mpegts_mux_dvb.c:647
+#: src/input/mpegts/mpegts_mux_dvb.c:778 src/input/mpegts/mpegts_mux_dvb.c:801
+#: src/input/mpegts/mpegts_mux_dvb.c:824 src/input/mpegts/mpegts_mux_dvb.c:875
+#: src/input/mpegts/mpegts_mux_dvb.c:1039
+msgid "QAM/AUTO"
 msgstr ""
 
 #: src/transcoding/codec/codecs/libs/libvpx.c:106
@@ -6980,7 +6983,7 @@ msgstr ""
 msgid "Reject exact match"
 msgstr ""
 
-#: src/channels.c:1826
+#: src/channels.c:1827
 msgid "Relative path to the imagecache copy of the icon."
 msgstr ""
 
@@ -7477,7 +7480,7 @@ msgstr ""
 msgid "Scanfile"
 msgstr ""
 
-#: src/wizard.c:1050
+#: src/wizard.c:1051
 msgid "Scanning"
 msgstr ""
 
@@ -7805,7 +7808,7 @@ msgstr ""
 msgid "Service Mapper"
 msgstr ""
 
-#: src/wizard.c:1142
+#: src/wizard.c:1143
 msgid "Service Mapping"
 msgstr ""
 
@@ -8121,11 +8124,11 @@ msgid ""
 "and supply both to clients."
 msgstr ""
 
-#: src/channels.c:1782
+#: src/channels.c:1783
 msgid "Sort index"
 msgstr ""
 
-#: src/channels.c:1783
+#: src/channels.c:1784
 msgid "Sort index."
 msgstr ""
 
@@ -9982,7 +9985,7 @@ msgstr ""
 msgid "Total number of services found on this network."
 msgstr ""
 
-#: src/wizard.c:1038
+#: src/wizard.c:1039
 msgid "Total number of services found."
 msgstr ""
 
@@ -10100,7 +10103,7 @@ msgstr ""
 msgid "Tuner"
 msgstr ""
 
-#: src/wizard.c:670
+#: src/wizard.c:671
 msgid "Tuner and Network"
 msgstr ""
 
@@ -10160,7 +10163,7 @@ msgstr ""
 msgid "UPnP Protocol"
 msgstr ""
 
-#: src/tvhlog.c:98 src/wizard.c:826 src/dvr/dvr_db.c:4962
+#: src/tvhlog.c:98 src/wizard.c:827 src/dvr/dvr_db.c:4962
 #: src/input/mpegts/iptv/iptv.c:952 src/input/mpegts/iptv/iptv_mux.c:130
 msgid "URL"
 msgstr ""
@@ -10169,7 +10172,7 @@ msgstr ""
 msgid "URL for comparison"
 msgstr ""
 
-#: src/wizard.c:827
+#: src/wizard.c:828
 msgid "URL of the M3U playlist."
 msgstr ""
 
@@ -10634,7 +10637,7 @@ msgstr ""
 msgid "Use service IDs as channel numbers"
 msgstr ""
 
-#: src/channels.c:1798
+#: src/channels.c:1799
 msgid "Use tag internally (don't expose to clients)."
 msgstr ""
 
