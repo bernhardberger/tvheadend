@@ -251,8 +251,9 @@ dvb_psi_parse_pmt
   int rds_uecp;
   int ac4;
   int pcr_shared = 0;
-  const char *lang;
+  const char *lang, *supp_lang;
   uint8_t audio_type, audio_version;
+  int supp_audio_type;
   mpegts_mux_t *mux = mt->mt_mux;
   caid_t *c, *cn;
 
@@ -316,7 +317,9 @@ dvb_psi_parse_pmt
     position = 0;
     tt_position = 1000;
     lang = NULL;
+    supp_lang = NULL;
     audio_type = 0;
+    supp_audio_type = -1;
     audio_version = 0;
     video_stream = 0;
 
@@ -450,6 +453,23 @@ dvb_psi_parse_pmt
 
         if((estype == 0x06 || estype == 0x81) && ac4)
           hts_stream_type = SCT_AC4;
+
+        if(ptr[0] == 0x06 && dlen >= 2) { /* supplementary audio */
+          switch((ptr[1] >> 2) & 0x1f) { /* editorial_classification */
+          case 0x01: /* audio description for the visually impaired */
+          case 0x03: /* spoken subtitles for the visually impaired */
+            supp_audio_type = 3;
+            break;
+          case 0x02: /* clean audio for the hearing impaired */
+            supp_audio_type = 2;
+            break;
+          default:
+            break;
+          }
+          /* language_code_present, overrides the ISO 639 descriptor */
+          if((ptr[1] & 0x01) && dlen >= 5)
+            supp_lang = lang_code_get2((const char*)ptr + 2, 3);
+        }
         break;
 
       case DVB_DESC_ANCILLARY_DATA:
@@ -468,7 +488,12 @@ dvb_psi_parse_pmt
       }
       len -= dlen; ptr += dlen; dllen -= dlen;
     }
-    
+
+    if (supp_lang)
+      lang = supp_lang;
+    if (supp_audio_type >= 0)
+      audio_type = supp_audio_type;
+
     if (hts_stream_type != SCT_UNKNOWN) {
 
       st = elementary_stream_find(set, pid);
