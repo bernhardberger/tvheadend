@@ -1207,6 +1207,12 @@ dvr_entry_create_from_htsmsg(htsmsg_t *conf, epg_broadcast_t *e)
       htsmsg_add_str(conf, "uri", e->episodelink->uri);
     if (e->image)
       htsmsg_add_str(conf, "image", e->image);
+    if (e->image_poster)
+      htsmsg_add_str(conf, "imagePoster", e->image_poster);
+    if (e->image_backdrop)
+      htsmsg_add_str(conf, "imageBackdrop", e->image_backdrop);
+    if (e->image_still)
+      htsmsg_add_str(conf, "imageStill", e->image_still);
     genre = LIST_FIRST(&e->genre);
     if (genre)
       htsmsg_add_u32(conf, "content_type", genre->code / 16);
@@ -2167,6 +2173,9 @@ dvr_entry_dec_ref(dvr_entry_t *de)
   free(de->de_channel_name);
   free(de->de_epnum.text);
   free(de->de_image);
+  free(de->de_image_poster);
+  free(de->de_image_backdrop);
+  free(de->de_image_still);
   free(de->de_fanart_image);
   free(de->de_uri);
 
@@ -4268,6 +4277,30 @@ dvr_entry_get_fanart_image(const dvr_entry_t *de)
   return de->de_fanart_image;
 }
 
+const char *
+dvr_entry_get_image_poster(const dvr_entry_t *de)
+{
+  if (de && !strempty(de->de_image_poster))
+    return de->de_image_poster;
+  return de && de->de_bcast ? de->de_bcast->image_poster : NULL;
+}
+
+const char *
+dvr_entry_get_image_backdrop(const dvr_entry_t *de)
+{
+  if (de && !strempty(de->de_image_backdrop))
+    return de->de_image_backdrop;
+  return de && de->de_bcast ? de->de_bcast->image_backdrop : NULL;
+}
+
+const char *
+dvr_entry_get_image_still(const dvr_entry_t *de)
+{
+  if (de && !strempty(de->de_image_still))
+    return de->de_image_still;
+  return de && de->de_bcast ? de->de_bcast->image_still : NULL;
+}
+
 static const void *
 dvr_entry_class_image_get0(dvr_entry_t *de, const char *image)
 {
@@ -4299,6 +4332,51 @@ static void
 dvr_entry_class_fanart_image_notify(void *o, const char *lang)
 {
   (void)imagecache_get_id(dvr_entry_get_fanart_image(o));
+}
+
+/* Unlike the legacy image properties, omit empty typed images from grids. */
+static const void *
+dvr_entry_class_typed_image_get(const char *image)
+{
+  prop_ptr = strempty(image) ? NULL :
+             imagecache_get_propstr(image, prop_sbuf, PROP_SBUF_LEN);
+  return &prop_ptr;
+}
+
+static const void *
+dvr_entry_class_image_poster_get(void *o)
+{
+  return dvr_entry_class_typed_image_get(dvr_entry_get_image_poster(o));
+}
+
+static void
+dvr_entry_class_image_poster_notify(void *o, const char *lang)
+{
+  (void)imagecache_get_id(dvr_entry_get_image_poster(o));
+}
+
+static const void *
+dvr_entry_class_image_backdrop_get(void *o)
+{
+  return dvr_entry_class_typed_image_get(dvr_entry_get_image_backdrop(o));
+}
+
+static void
+dvr_entry_class_image_backdrop_notify(void *o, const char *lang)
+{
+  (void)imagecache_get_id(dvr_entry_get_image_backdrop(o));
+}
+
+static const void *
+dvr_entry_class_image_still_get(void *o)
+{
+  return dvr_entry_class_typed_image_get(dvr_entry_get_image_still(o));
+}
+
+static void
+dvr_entry_class_image_still_notify(void *o, const char *lang)
+{
+  (void)imagecache_get_id(dvr_entry_get_image_still(o));
 }
 
 static const void *
@@ -4650,6 +4728,36 @@ const idclass_t dvr_entry_class = {
       .get      = dvr_entry_class_image_get,
       .notify   = dvr_entry_class_image_notify,
       .off      = offsetof(dvr_entry_t, de_image),
+      .opts     = PO_HIDDEN,
+    },
+    {
+      .type     = PT_STR,
+      .id       = "imagePoster",
+      .name     = N_("Programme poster"),
+      .desc     = N_("Programme poster image."),
+      .get      = dvr_entry_class_image_poster_get,
+      .notify   = dvr_entry_class_image_poster_notify,
+      .off      = offsetof(dvr_entry_t, de_image_poster),
+      .opts     = PO_HIDDEN,
+    },
+    {
+      .type     = PT_STR,
+      .id       = "imageBackdrop",
+      .name     = N_("Programme backdrop"),
+      .desc     = N_("Programme backdrop image."),
+      .get      = dvr_entry_class_image_backdrop_get,
+      .notify   = dvr_entry_class_image_backdrop_notify,
+      .off      = offsetof(dvr_entry_t, de_image_backdrop),
+      .opts     = PO_HIDDEN,
+    },
+    {
+      .type     = PT_STR,
+      .id       = "imageStill",
+      .name     = N_("Programme still"),
+      .desc     = N_("Programme still image."),
+      .get      = dvr_entry_class_image_still_get,
+      .notify   = dvr_entry_class_image_still_notify,
+      .off      = offsetof(dvr_entry_t, de_image_still),
       .opts     = PO_HIDDEN,
     },
     {
