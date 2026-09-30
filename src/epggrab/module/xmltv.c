@@ -783,6 +783,58 @@ xmltv_appendit(lang_str_t **_desc, string_list_t *list,
 }
 
 /**
+ * Select the first image of each type, preferring landscape for backdrops
+ * and stills. Keep provider order within the preferred orientation.
+ */
+static int _xmltv_parse_images
+  (epggrab_module_t *mod, epg_broadcast_t *ebc, htsmsg_t *tags,
+   epg_changes_t *changes)
+{
+  epggrab_module_int_t *imod = (epggrab_module_int_t *)mod;
+  const char *poster = NULL, *backdrop = NULL, *still = NULL;
+  const char *type, *url, *orient;
+  int backdrop_landscape = 0, still_landscape = 0, landscape, save = 0;
+  htsmsg_t *image, *attribs;
+  htsmsg_field_t *f;
+
+  if (!imod->xmltv_image_poster && !imod->xmltv_image_backdrop &&
+      !imod->xmltv_image_still)
+    return 0;
+
+  HTSMSG_FOREACH(f, tags) {
+    if (strcmp(htsmsg_field_name(f), "image")) continue;
+    if (!(image = htsmsg_get_map_by_field(f)) ||
+        !(attribs = htsmsg_get_map(image, "attrib")) ||
+        !(type = htsmsg_get_str(attribs, "type")) ||
+        strempty(url = htsmsg_get_str(image, "cdata")))
+      continue;
+    orient = htsmsg_get_str(attribs, "orient");
+    landscape = orient && !strcmp(orient, "L");
+    if (!strcmp(type, "poster")) {
+      if (!poster) poster = url;
+    } else if (!strcmp(type, "backdrop")) {
+      if (!backdrop || (!backdrop_landscape && landscape)) {
+        backdrop = url;
+        backdrop_landscape = landscape;
+      }
+    } else if (!strcmp(type, "still")) {
+      if (!still || (!still_landscape && landscape)) {
+        still = url;
+        still_landscape = landscape;
+      }
+    }
+  }
+
+  if (imod->xmltv_image_poster && poster)
+    save |= epg_broadcast_set_image_poster(ebc, poster, changes);
+  if (imod->xmltv_image_backdrop && backdrop)
+    save |= epg_broadcast_set_image_backdrop(ebc, backdrop, changes);
+  if (imod->xmltv_image_still && still)
+    save |= epg_broadcast_set_image_still(ebc, still, changes);
+  return save;
+}
+
+/**
  * Parse tags inside of a programme
  */
 static int _xmltv_parse_programme_tags
@@ -1042,6 +1094,8 @@ static int _xmltv_parse_programme_tags
 
   if (icon)
     save |= epg_broadcast_set_image(ebc, icon, &changes);
+
+  save |= _xmltv_parse_images(mod, ebc, tags, &changes);
 
   save |= epg_broadcast_set_first_aired(ebc, first_aired, &changes);
 
@@ -1495,6 +1549,55 @@ xmltv_dn_chnum_list ( void *o, const char *lang )
   return strtab2htsmsg(tab, 1, lang);
 }
 
+static idnode_slist_t xmltv_image_types_slist[] = {
+  {
+    .id   = "poster",
+    .name = N_("Poster"),
+    .off  = offsetof(epggrab_module_int_t, xmltv_image_poster),
+  },
+  {
+    .id   = "backdrop",
+    .name = N_("Backdrop"),
+    .off  = offsetof(epggrab_module_int_t, xmltv_image_backdrop),
+  },
+  {
+    .id   = "still",
+    .name = N_("Still"),
+    .off  = offsetof(epggrab_module_int_t, xmltv_image_still),
+  },
+  {}
+};
+
+static htsmsg_t *
+xmltv_image_types_list ( void *o, const char *lang )
+{
+  return idnode_slist_enum(o, xmltv_image_types_slist, lang);
+}
+
+static const void *
+xmltv_image_types_get ( void *o )
+{
+  return idnode_slist_get(o, xmltv_image_types_slist);
+}
+
+static int
+xmltv_image_types_set ( void *o, const void *p )
+{
+  return idnode_slist_set(o, xmltv_image_types_slist, p);
+}
+
+static char *
+xmltv_image_types_rend ( void *o, const char *lang )
+{
+  return idnode_slist_rend(o, xmltv_image_types_slist, lang);
+}
+
+#define IMAGE_TYPES_NAME N_("Programme image types")
+#define IMAGE_TYPES_DESC \
+  N_("Import the selected XMLTV programme image types in addition to icons. " \
+     "Disabled by default. Each type can add image cache downloads and " \
+     "memory usage. Backdrops and stills prefer landscape images.")
+
 const idclass_t epggrab_mod_int_xmltv_class = {
   .ic_super      = &epggrab_mod_int_class,
   .ic_class      = "epggrab_mod_int_xmltv",
@@ -1543,6 +1646,18 @@ const idclass_t epggrab_mod_int_xmltv_class = {
       .name   = USE_CATEGORY_NOT_GENRE_NAME,
       .desc   = USE_CATEGORY_NOT_GENRE_DESC,
       .off    = offsetof(epggrab_module_int_t, xmltv_use_category_not_genre),
+      .group  = 1
+    },
+    {
+      .type   = PT_STR,
+      .islist = 1,
+      .id     = "image_types",
+      .name   = IMAGE_TYPES_NAME,
+      .desc   = IMAGE_TYPES_DESC,
+      .get    = xmltv_image_types_get,
+      .set    = xmltv_image_types_set,
+      .list   = xmltv_image_types_list,
+      .rend   = xmltv_image_types_rend,
       .group  = 1
     },
     {
@@ -1644,6 +1759,18 @@ const idclass_t epggrab_mod_ext_xmltv_class = {
       .name   = USE_CATEGORY_NOT_GENRE_NAME,
       .desc   = USE_CATEGORY_NOT_GENRE_DESC,
       .off    = offsetof(epggrab_module_int_t, xmltv_use_category_not_genre),
+      .group  = 1
+    },
+    {
+      .type   = PT_STR,
+      .islist = 1,
+      .id     = "image_types",
+      .name   = IMAGE_TYPES_NAME,
+      .desc   = IMAGE_TYPES_DESC,
+      .get    = xmltv_image_types_get,
+      .set    = xmltv_image_types_set,
+      .list   = xmltv_image_types_list,
+      .rend   = xmltv_image_types_rend,
       .group  = 1
     },
     {
