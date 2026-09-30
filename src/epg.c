@@ -887,6 +887,9 @@ static void _epg_broadcast_destroy ( void *eo )
     free(eg);
   }
   free(ebc->image);
+  free(ebc->image_poster);
+  free(ebc->image_backdrop);
+  free(ebc->image_still);
   free(ebc->epnum.text);
   if (ebc->credits)     htsmsg_destroy(ebc->credits);
   if (ebc->credits_cached) lang_str_destroy(ebc->credits_cached);
@@ -1060,6 +1063,12 @@ int epg_broadcast_change_finish
     save |= epg_broadcast_set_rating_label(broadcast, 0, NULL);
   if (!(changes & EPG_CHANGED_IMAGE))
     save |= epg_broadcast_set_image(broadcast, NULL, NULL);
+  if (!(changes & EPG_CHANGED_IMAGE_POSTER))
+    save |= epg_broadcast_set_image_poster(broadcast, NULL, NULL);
+  if (!(changes & EPG_CHANGED_IMAGE_BACKDROP))
+    save |= epg_broadcast_set_image_backdrop(broadcast, NULL, NULL);
+  if (!(changes & EPG_CHANGED_IMAGE_STILL))
+    save |= epg_broadcast_set_image_still(broadcast, NULL, NULL);
   if (!(changes & EPG_CHANGED_GENRE))
     save |= epg_broadcast_set_genre(broadcast, NULL, NULL);
   if (!(changes & EPG_CHANGED_TITLE))
@@ -1124,6 +1133,9 @@ epg_broadcast_t *epg_broadcast_clone
     *save |= epg_broadcast_set_age_rating(ebc, src->age_rating, &changes);
     *save |= epg_broadcast_set_rating_label(ebc, src->rating_label, &changes);
     *save |= epg_broadcast_set_image(ebc, src->image, &changes);
+    *save |= epg_broadcast_set_image_poster(ebc, src->image_poster, &changes);
+    *save |= epg_broadcast_set_image_backdrop(ebc, src->image_backdrop, &changes);
+    *save |= epg_broadcast_set_image_still(ebc, src->image_still, &changes);
     *save |= epg_broadcast_set_genre(ebc, &src->genre, &changes);
     *save |= epg_broadcast_set_title(ebc, src->title, &changes);
     *save |= epg_broadcast_set_subtitle(ebc, src->subtitle, &changes);
@@ -1416,6 +1428,42 @@ int epg_broadcast_set_image
   if (!b) return 0;
   save = _epg_object_set_str(b, &b->image, image,
                              changed, EPG_CHANGED_IMAGE);
+  if (save)
+    imagecache_get_id(image);
+  return save;
+}
+
+int epg_broadcast_set_image_poster
+  ( epg_broadcast_t *b, const char *image, epg_changes_t *changed )
+{
+  int save;
+  if (!b) return 0;
+  save = _epg_object_set_str(b, &b->image_poster, image,
+                             changed, EPG_CHANGED_IMAGE_POSTER);
+  if (save)
+    imagecache_get_id(image);
+  return save;
+}
+
+int epg_broadcast_set_image_backdrop
+  ( epg_broadcast_t *b, const char *image, epg_changes_t *changed )
+{
+  int save;
+  if (!b) return 0;
+  save = _epg_object_set_str(b, &b->image_backdrop, image,
+                             changed, EPG_CHANGED_IMAGE_BACKDROP);
+  if (save)
+    imagecache_get_id(image);
+  return save;
+}
+
+int epg_broadcast_set_image_still
+  ( epg_broadcast_t *b, const char *image, epg_changes_t *changed )
+{
+  int save;
+  if (!b) return 0;
+  save = _epg_object_set_str(b, &b->image_still, image,
+                             changed, EPG_CHANGED_IMAGE_STILL);
   if (save)
     imagecache_get_id(image);
   return save;
@@ -1743,6 +1791,12 @@ htsmsg_t *epg_broadcast_serialize ( epg_broadcast_t *broadcast )
     }
   if (broadcast->image)
     htsmsg_add_str(m, "img", broadcast->image);
+  if (broadcast->image_poster)
+    htsmsg_add_str(m, "img_poster", broadcast->image_poster);
+  if (broadcast->image_backdrop)
+    htsmsg_add_str(m, "img_backdrop", broadcast->image_backdrop);
+  if (broadcast->image_still)
+    htsmsg_add_str(m, "img_still", broadcast->image_still);
   if (broadcast->title)
     lang_str_serialize(broadcast->title, m, "tit");
   if (broadcast->subtitle)
@@ -1852,6 +1906,12 @@ epg_broadcast_t *epg_broadcast_deserialize
 
   if ((str = htsmsg_get_str(m, "img")))
     *save |= epg_broadcast_set_image(ebc, str, &changes);
+  if ((str = htsmsg_get_str(m, "img_poster")))
+    *save |= epg_broadcast_set_image_poster(ebc, str, &changes);
+  if ((str = htsmsg_get_str(m, "img_backdrop")))
+    *save |= epg_broadcast_set_image_backdrop(ebc, str, &changes);
+  if ((str = htsmsg_get_str(m, "img_still")))
+    *save |= epg_broadcast_set_image_still(ebc, str, &changes);
 
   if ((hm = htsmsg_get_list(m, "genre"))) {
     epg_genre_list_t *egl = calloc(1, sizeof(epg_genre_list_t));

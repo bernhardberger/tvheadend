@@ -151,6 +151,9 @@ typedef uint64_t epg_changes_t;
 #define EPG_CHANGED_FIRST_AIRED    (1ULL<<32)
 #define EPG_CHANGED_COPYRIGHT_YEAR (1ULL<<33)
 #define EPG_CHANGED_RATING_LABEL   (1ULL<<34)
+#define EPG_CHANGED_IMAGE_POSTER   (1ULL<<35)
+#define EPG_CHANGED_IMAGE_BACKDROP (1ULL<<36)
+#define EPG_CHANGED_IMAGE_STILL    (1ULL<<37)
 
 typedef struct epg_object_ops {
   void (*getref)  ( void *o );        ///< Get a reference
@@ -291,6 +294,9 @@ struct epg_broadcast
   lang_str_t                *description;      ///< Description
 
   char                      *image;            ///< Episode image
+  char                      *image_poster;     ///< Programme poster
+  char                      *image_backdrop;   ///< Programme backdrop
+  char                      *image_still;      ///< Programme still
   epg_genre_list_t           genre;            ///< Episode genre(s)
   epg_episode_num_t          epnum;            ///< Episode numbering; NOTE: use the accessor routine!
 
@@ -409,6 +415,15 @@ int epg_broadcast_set_genre
   ( epg_broadcast_t *b, epg_genre_list_t *g, epg_changes_t *changed )
   __attribute__((warn_unused_result));
 int epg_broadcast_set_image
+  ( epg_broadcast_t *b, const char *i, epg_changes_t *changed )
+  __attribute__((warn_unused_result));
+int epg_broadcast_set_image_poster
+  ( epg_broadcast_t *b, const char *i, epg_changes_t *changed )
+  __attribute__((warn_unused_result));
+int epg_broadcast_set_image_backdrop
+  ( epg_broadcast_t *b, const char *i, epg_changes_t *changed )
+  __attribute__((warn_unused_result));
+int epg_broadcast_set_image_still
   ( epg_broadcast_t *b, const char *i, epg_changes_t *changed )
   __attribute__((warn_unused_result));
 int epg_broadcast_set_is_bw

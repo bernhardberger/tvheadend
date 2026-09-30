@@ -88,6 +88,9 @@ static void epg_memoryinfo_broadcasts_update(memoryinfo_t *my)
     RB_FOREACH(ebc, &ch->ch_epg_schedule, sched_link) {
       size += sizeof(*ebc);
       size += tvh_strlen(ebc->image);
+      size += tvh_strlen(ebc->image_poster);
+      size += tvh_strlen(ebc->image_backdrop);
+      size += tvh_strlen(ebc->image_still);
       size += tvh_strlen(ebc->epnum.text);
       size += lang_str_size(ebc->title);
       size += lang_str_size(ebc->subtitle);
