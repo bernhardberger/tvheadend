@@ -1114,9 +1114,21 @@ htsp_build_dvrentry(htsp_connection_t *htsp, dvr_entry_t *de, const char *method
     if(!strempty(image))
       htsmsg_add_str(out, "image", htsp_image(htsp, image, buf, sizeof(buf), 34));
     /* htsmsg camelcase to be compatible with other names */
-    image = de->de_fanart_image;
+    image = dvr_entry_get_fanart_image(de);
+    /* Keep the JSON fanart_image lookup slot unchanged. */
+    if (strempty(image))
+      image = dvr_entry_get_image_backdrop(de);
     if(!strempty(image))
       htsmsg_add_str(out, "fanartImage", htsp_image(htsp, image, buf, sizeof(buf), 34));
+    image = dvr_entry_get_image_poster(de);
+    if (!strempty(image))
+      htsmsg_add_str(out, "imagePoster", htsp_image(htsp, image, buf, sizeof(buf), 34));
+    image = dvr_entry_get_image_backdrop(de);
+    if (!strempty(image))
+      htsmsg_add_str(out, "imageBackdrop", htsp_image(htsp, image, buf, sizeof(buf), 34));
+    image = dvr_entry_get_image_still(de);
+    if (!strempty(image))
+      htsmsg_add_str(out, "imageStill", htsp_image(htsp, image, buf, sizeof(buf), 34));
     if (de->de_copyright_year)
       htsmsg_add_u32(out, "copyrightYear", de->de_copyright_year);
 
@@ -1439,6 +1451,12 @@ htsp_build_event
   htsp_serialize_epnum(out, &epnum, NULL);
   if (!strempty(e->image))
     htsmsg_add_str(out, "image", htsp_image(htsp, e->image, buf, sizeof(buf), 34));
+  if (!strempty(e->image_poster))
+    htsmsg_add_str(out, "imagePoster", htsp_image(htsp, e->image_poster, buf, sizeof(buf), 34));
+  if (!strempty(e->image_backdrop))
+    htsmsg_add_str(out, "imageBackdrop", htsp_image(htsp, e->image_backdrop, buf, sizeof(buf), 34));
+  if (!strempty(e->image_still))
+    htsmsg_add_str(out, "imageStill", htsp_image(htsp, e->image_still, buf, sizeof(buf), 34));
 
   if (e->channel) {
     LIST_FOREACH(de, &e->channel->ch_dvrs, de_channel_link) {
