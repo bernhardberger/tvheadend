@@ -181,6 +181,16 @@ api_epg_entry ( epg_broadcast_t *eb, const char *lang, const access_t *perm, con
     htsmsg_add_str(m, "episodeOnscreen", buf);
 
   /* Image */
+  s = eb->image_poster;
+  if (!strempty(s))
+    htsmsg_add_str(m, "imagePoster", imagecache_get_propstr(s, buf, sizeof(buf)));
+  s = eb->image_backdrop;
+  if (!strempty(s))
+    htsmsg_add_str(m, "imageBackdrop", imagecache_get_propstr(s, buf, sizeof(buf)));
+  s = eb->image_still;
+  if (!strempty(s))
+    htsmsg_add_str(m, "imageStill", imagecache_get_propstr(s, buf, sizeof(buf)));
+
   s = eb->image;
   if (!strempty(s)) {
     s = imagecache_get_propstr(s, buf, sizeof(buf));
