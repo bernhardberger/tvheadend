@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tv generator-info-name="typed image regression test">
+  <channel id="images.test"><display-name>Image Test</display-name></channel>
+  <programme channel="images.test" start="$start0" stop="$stop0">
+    <title>Both</title>
+    <icon src="$base/icon.png"/>
+    <icon src="$base/icon-second.png"/>
+    <image type="poster" orient="L" size="1" system="test">$base/poster-first.png</image>
+    <image type="poster" orient="P" size="3">$base/poster-second.png</image>
+    <image type="backdrop" orient="P">$base/backdrop-portrait.png</image>
+    <image type="backdrop">$base/backdrop-unspecified.png</image>
+    <image type="backdrop" orient="L">$base/backdrop-landscape-first.png</image>
+    <image type="backdrop" orient="L">$base/backdrop-landscape-second.png</image>
+    <image type="still" orient="P">$base/still-portrait.png</image>
+    <image type="still" orient="L">$base/still-landscape-first.png</image>
+    <image type="still" orient="L">$base/still-landscape-second.png</image>
+  </programme>
+  <programme channel="images.test" start="$start1" stop="$stop1">
+    <title>Icon only</title>
+    <icon src="$base/icon-only.png"/>
+    <icon src="$base/icon-only-second.png"/>
+  </programme>
+  <programme channel="images.test" start="$start2" stop="$stop2">
+    <title>Typed only</title>
+    <image type="poster">$base/typed-poster.png</image>
+    <image type="backdrop" orient="P">$base/typed-backdrop-first.png</image>
+    <image type="backdrop">$base/typed-backdrop-second.png</image>
+    <image type="still">$file_image</image>
+    <image type="still" orient="P">$base/typed-still-second.png</image>
+  </programme>
+  <programme channel="images.test" start="$start3" stop="$stop3">
+    <title>No images</title>
+  </programme>
+  <programme channel="images.test" start="$start4" stop="$stop4">
+    <title>Ignored images</title>
+    <image type="person">$base/person.png</image>
+    <image type="character">$base/character.png</image>
+    <image type="unknown">$base/unknown.png</image>
+    <image>$base/missing-type.png</image>
+    <image type="poster"/>
+    <image type="backdrop" orient="L"/>
+    <image type="still"/>
+  </programme>
+  <programme channel="images.test" start="$start5" stop="$stop5">
+    <title>Shared image</title>
+    <icon src="$base/shared.png"/>
+    <image type="poster">$base/shared.png</image>
+    <image type="backdrop" orient="L">$base/shared.png</image>
+    <image type="still" orient="L">$base/shared.png</image>
+  </programme>
+  <programme channel="images.test" start="$start6" stop="$stop6">
+    <title>Updated images</title>
+    <icon src="$base/update-icon.png"/>
+    <image type="poster">$base/update-poster.png</image>
+    <image type="backdrop" orient="L">$base/update-backdrop.png</image>
+    <image type="still" orient="L">$base/update-still.png</image>
+  </programme>
+</tv>
