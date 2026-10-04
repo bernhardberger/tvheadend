@@ -179,13 +179,62 @@ pass_muxer_pid_state_init(pass_muxer_t *pm, uint16_t *map)
   return 0;
 }
 
+static int
+pass_muxer_assign_pair(pass_muxer_t *pm, const streaming_start_t *ss,
+                       int i, int j, uint16_t *map, uint8_t *used,
+                       uint8_t *done, uint8_t *claimed)
+{
+  const streaming_start_component_t *new = &ss->ss_components[i];
+  const streaming_start_component_t *old = &pm->pm_ss->ss_components[j];
+  uint16_t output_pid = pass_muxer_map_pid(pm, old->es_pid);
+
+  if (output_pid >= PASS_PID_COUNT || claimed[output_pid] ||
+      pass_muxer_pid_conflict(ss, new, output_pid))
+    return 0;
+
+  used[j] = 1;
+  done[i] = 1;
+  claimed[output_pid] = 1;
+  map[new->es_pid] = output_pid;
+
+  if (new->es_pid != output_pid) {
+    pm->pm_pid_active = 1;
+    pm->pm_pid_rewrite_cc[output_pid] = 1;
+    tvhdebug(LS_PASS, "%s: remap input PID %d (%s) to stable PID %d",
+             pm->pm_filename ?: "Pass muxer", new->es_pid,
+             streaming_component_type2txt(new->es_type), output_pid);
+  }
+  return 1;
+}
+
+/*
+ * Index of the only remaining component of the given type, -1 if there is
+ * none or more than one.
+ */
+static int
+pass_muxer_unique_type(const streaming_start_t *ss, const uint8_t *taken,
+                       streaming_component_type_t type)
+{
+  int i, found = -1;
+
+  for (i = 0; i < ss->ss_num_components; i++) {
+    if (taken[i] || ss->ss_components[i].es_type != type ||
+        !pass_muxer_stable_component(&ss->ss_components[i]))
+      continue;
+    if (found >= 0)
+      return -1;
+    found = i;
+  }
+  return found;
+}
+
 static void
 pass_muxer_assign_components(pass_muxer_t *pm, const streaming_start_t *ss,
                              uint16_t *map, uint8_t *used, uint8_t *claimed)
 {
   const streaming_start_component_t *new, *old;
   uint8_t *done;
-  uint16_t output_pid, best_output_pid;
+  uint16_t output_pid;
   int i, j, best_new, best_old, best_score, score;
 
   done = calloc(ss->ss_num_components ? ss->ss_num_components : 1,
@@ -197,7 +246,6 @@ pass_muxer_assign_components(pass_muxer_t *pm, const streaming_start_t *ss,
     best_new = -1;
     best_old = -1;
     best_score = 0;
-    best_output_pid = 0;
 
     /*
      * Choose the strongest eligible pair globally.  This prevents an
@@ -227,27 +275,30 @@ pass_muxer_assign_components(pass_muxer_t *pm, const streaming_start_t *ss,
         best_new = i;
         best_old = j;
         best_score = score;
-        best_output_pid = output_pid;
       }
     }
 
     if (best_new < 0)
       break;
 
-    new = &ss->ss_components[best_new];
-    used[best_old] = 1;
-    done[best_new] = 1;
-    claimed[best_output_pid] = 1;
-    map[new->es_pid] = best_output_pid;
+    pass_muxer_assign_pair(pm, ss, best_new, best_old, map, used, done,
+                           claimed);
+  }
 
-    if (new->es_pid != best_output_pid) {
-      pm->pm_pid_active = 1;
-      pm->pm_pid_rewrite_cc[best_output_pid] = 1;
-      tvhdebug(LS_PASS, "%s: remap input PID %d (%s) to stable PID %d",
-               pm->pm_filename ?: "Pass muxer", new->es_pid,
-               streaming_component_type2txt(new->es_type),
-               best_output_pid);
-    }
+  /*
+   * Video and teletext usually have no language, and a replacement stream
+   * gets a new index, so they score zero.  Map such a stream anyway when
+   * the pairing is unambiguous: one remaining stream of that type on each
+   * side, as in a regional PID switch.
+   */
+  for (i = 0; i < ss->ss_num_components; i++) {
+    new = &ss->ss_components[i];
+    if (done[i] || !pass_muxer_stable_component(new) ||
+        pass_muxer_unique_type(ss, done, new->es_type) != i)
+      continue;
+    j = pass_muxer_unique_type(pm->pm_ss, used, new->es_type);
+    if (j >= 0)
+      pass_muxer_assign_pair(pm, ss, i, j, map, used, done, claimed);
   }
 
   free(done);
