@@ -179,64 +179,78 @@ pass_muxer_pid_state_init(pass_muxer_t *pm, uint16_t *map)
   return 0;
 }
 
-static int
-pass_muxer_best_component(const pass_muxer_t *pm,
-                          const streaming_start_component_t *new,
-                          const uint8_t *used)
+static void
+pass_muxer_assign_components(pass_muxer_t *pm, const streaming_start_t *ss,
+                             uint16_t *map, uint8_t *used, uint8_t *claimed)
 {
-  const streaming_start_component_t *old;
-  int best;
-  int best_score;
-  int i;
-  int score;
+  const streaming_start_component_t *new, *old;
+  uint8_t *done;
+  uint16_t output_pid, best_output_pid;
+  int i, j, best_new, best_old, best_score, score;
 
-  best = -1;
-  best_score = -1;
-  for (i = 0; i < pm->pm_ss->ss_num_components; i++) {
-    old = &pm->pm_ss->ss_components[i];
-    if (used[i] || !pass_muxer_stable_component(old))
-      continue;
-    score = pass_muxer_component_match(old, new);
-    if (score > best_score) {
-      best = i;
-      best_score = score;
+  done = calloc(ss->ss_num_components ? ss->ss_num_components : 1,
+                sizeof(*done));
+  if (done == NULL)
+    return;
+
+  for (;;) {
+    best_new = -1;
+    best_old = -1;
+    best_score = 0;
+    best_output_pid = 0;
+
+    /*
+     * Choose the strongest eligible pair globally.  This prevents an
+     * early weak match from consuming an old component that is a better
+     * match for a later stream.  A score of zero carries no useful
+     * identity information and is therefore not mapped.
+     */
+    for (i = 0; i < ss->ss_num_components; i++) {
+      new = &ss->ss_components[i];
+      if (done[i] || !pass_muxer_stable_component(new))
+        continue;
+
+      for (j = 0; j < pm->pm_ss->ss_num_components; j++) {
+        old = &pm->pm_ss->ss_components[j];
+        if (used[j] || !pass_muxer_stable_component(old))
+          continue;
+
+        score = pass_muxer_component_match(old, new);
+        if (score <= best_score)
+          continue;
+
+        output_pid = pass_muxer_map_pid(pm, old->es_pid);
+        if (output_pid >= PASS_PID_COUNT || claimed[output_pid] ||
+            pass_muxer_pid_conflict(ss, new, output_pid))
+          continue;
+
+        best_new = i;
+        best_old = j;
+        best_score = score;
+        best_output_pid = output_pid;
+      }
+    }
+
+    if (best_new < 0)
+      break;
+
+    new = &ss->ss_components[best_new];
+    used[best_old] = 1;
+    done[best_new] = 1;
+    claimed[best_output_pid] = 1;
+    map[new->es_pid] = best_output_pid;
+
+    if (new->es_pid != best_output_pid) {
+      pm->pm_pid_active = 1;
+      pm->pm_pid_rewrite_cc[best_output_pid] = 1;
+      tvhdebug(LS_PASS, "%s: remap input PID %d (%s) to stable PID %d",
+               pm->pm_filename ?: "Pass muxer", new->es_pid,
+               streaming_component_type2txt(new->es_type),
+               best_output_pid);
     }
   }
-  return best;
-}
 
-static void
-pass_muxer_map_component(pass_muxer_t *pm, const streaming_start_t *ss,
-                         const streaming_start_component_t *new,
-                         uint16_t *map, uint8_t *used, uint8_t *claimed)
-{
-  const streaming_start_component_t *old;
-  int best;
-  uint16_t output_pid;
-
-  if (!pass_muxer_stable_component(new))
-    return;
-  best = pass_muxer_best_component(pm, new, used);
-  if (best < 0)
-    return;
-
-  old = &pm->pm_ss->ss_components[best];
-  output_pid = pass_muxer_map_pid(pm, old->es_pid);
-  if (output_pid >= PASS_PID_COUNT || claimed[output_pid] ||
-      pass_muxer_pid_conflict(ss, new, output_pid))
-    return;
-
-  used[best] = 1;
-  claimed[output_pid] = 1;
-  map[new->es_pid] = output_pid;
-  if (new->es_pid == output_pid)
-    return;
-
-  pm->pm_pid_active = 1;
-  pm->pm_pid_rewrite_cc[output_pid] = 1;
-  tvhdebug(LS_PASS, "%s: remap input PID %d (%s) to stable PID %d",
-           pm->pm_filename ?: "Pass muxer", new->es_pid,
-           streaming_component_type2txt(new->es_type), output_pid);
+  free(done);
 }
 
 static void
@@ -245,7 +259,6 @@ pass_muxer_update_pid_map(pass_muxer_t *pm, const streaming_start_t *ss)
   uint16_t *map;
   uint8_t *used;
   uint8_t claimed[PASS_PID_COUNT] = { 0 };
-  int i;
 
   if (!pm->pm_seekable || !pm->m_config.u.pass.m_rewrite_pmt)
     return;
@@ -271,8 +284,7 @@ pass_muxer_update_pid_map(pass_muxer_t *pm, const streaming_start_t *ss)
     free(map);
     return;
   }
-  for (i = 0; i < ss->ss_num_components; i++)
-    pass_muxer_map_component(pm, ss, &ss->ss_components[i], map, used, claimed);
+  pass_muxer_assign_components(pm, ss, map, used, claimed);
 
   free(used);
   free(pm->pm_pid_map);
